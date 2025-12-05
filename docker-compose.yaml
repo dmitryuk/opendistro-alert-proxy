@@ -1,0 +1,74 @@
+x-opensearch-user: &opensearch-user admin
+x-opensearch-password: &opensearch-password yourStrongPassword123
+
+services:
+    opensearch:
+        image: opensearchproject/opensearch:2.12.0
+        container_name: opensearch
+        environment:
+            cluster.name: opensearch-cluster
+            node.name: opensearch-node1
+            discovery.type: single-node
+            bootstrap.memory_lock: true
+            OPENSEARCH_JAVA_OPTS: "-Xms512m -Xmx512m"
+            OPENSEARCH_INITIAL_ADMIN_PASSWORD: *opensearch-password
+            OPENSEARCH_USERNAME: *opensearch-user
+            OPENSEARCH_PASSWORD: *opensearch-password
+        ulimits:
+            memlock:
+                soft: -1
+                hard: -1
+        volumes:
+            - opensearch-data:/usr/share/opensearch/data
+        ports:
+            - "9200:9200"
+            - "9600:9600"
+        networks:
+            - opensearch-net
+        healthcheck:
+            test: ["CMD-SHELL", "curl -f -k -u $$OPENSEARCH_USERNAME:$$OPENSEARCH_PASSWORD --max-time 5 https://localhost:9200/_cluster/health || exit 1"]
+            interval: 30s
+            timeout: 10s
+            retries: 5
+
+    opensearch-dashboards:
+        image: opensearchproject/opensearch-dashboards:2.12.0
+        container_name: opensearch-dashboards
+        ports:
+            - "5601:5601"
+        environment:
+            OPENSEARCH_HOSTS: "https://opensearch:9200"
+            OPENSEARCH_USERNAME: *opensearch-user
+            OPENSEARCH_PASSWORD: *opensearch-password
+            OPENSEARCH_SSL_VERIFICATION_MODE: none
+        networks:
+            - opensearch-net
+        depends_on:
+            opensearch:
+                condition: service_healthy
+
+    nodejs-app:
+        build:
+            dockerfile: ./Dockerfile
+            context: .
+        ports:
+            - "3000:80"
+        networks:
+            - opensearch-net
+        environment:
+            OPENSEARCH_HOST: https://opensearch:9200
+            OPENSEARCH_USERNAME: *opensearch-user
+            OPENSEARCH_PASSWORD: *opensearch-password
+        depends_on:
+            opensearch:
+                condition: service_healthy
+            opensearch-dashboards:
+                condition: service_started
+        volumes:
+            - ./src:/app
+volumes:
+    opensearch-data:
+
+networks:
+    opensearch-net:
+        driver: bridge
