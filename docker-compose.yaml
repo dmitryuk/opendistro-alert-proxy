@@ -51,12 +51,16 @@ services:
         build:
             dockerfile: ./Dockerfile
             context: .
+        command: [ "npm", "run", "dev"]
         ports:
             - "3000:80"
+            - "9229:9229"
         networks:
             - opensearch-net
         environment:
             OPENSEARCH_HOST: https://opensearch:9200
+            OPENSEARCH_DASHBOARDS_PRIVATE_HOST: http://opensearch-dashboards:5601
+            OPENSEARCH_DASHBOARDS_PUBLIC_HOST: http://opensearch-dashboards:5601
             OPENSEARCH_USERNAME: *opensearch-user
             OPENSEARCH_PASSWORD: *opensearch-password
         depends_on:
@@ -65,7 +69,7 @@ services:
             opensearch-dashboards:
                 condition: service_started
         volumes:
-            - ./src:/app
+            - ./:/app
 volumes:
     opensearch-data:
 

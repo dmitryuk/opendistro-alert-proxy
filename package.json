@@ -4,15 +4,21 @@
   "description": "",
   "license": "ISC",
   "author": "",
-  "type": "commonjs",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/app.ts",
+    "dev": "node --watch --inspect=0.0.0.0:9229 src/app.ts"
   },
   "devDependencies": {
-    "@types/node": "^24.10.1"
+    "@types/node": "^24.10.1",
+    "@types/rison": "^0.1.0",
+    "nodemon": "^3.1.11"
+  },
+  "engines": {
+    "node": "^25.0"
   },
   "dependencies": {
-    "@opensearch-project/opensearch": "^3.5.1"
+    "rison2": "^0.3.0"
   }
 }
