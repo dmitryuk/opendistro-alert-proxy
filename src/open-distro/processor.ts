@@ -4,40 +4,83 @@ import { RISON } from 'rison2'
 export class OpendistroProcessor
 {
     private client: OpendistroClient;
-    private dashboardPublicHost: string;
+    private readonly dashboardPublicHost: string;
 
     constructor(client: OpendistroClient, dashboardPublicHost: string) {
         this.client = client;
         this.dashboardPublicHost = dashboardPublicHost;
     }
 
-    public async findDashboardQuery(monitorId: string, periodStart: string, periodEnd: string): Promise<string>
+    /**
+     * Recursively removes any 'range' entries that contain the '@timestamp' key from the filters object.
+     * Works with nested objects and arrays at any depth.
+     */
+    private removeTimestampRangeFilters(obj: any): any {
+        // Handle null/undefined
+        if (obj === null || obj === undefined) {
+            return obj;
+        }
+
+        // Handle arrays - recursively process each element and filter out nulls
+        if (Array.isArray(obj)) {
+            return obj
+                .map(item => this.removeTimestampRangeFilters(item))
+                .filter(item => item !== null && item !== undefined);
+        }
+
+        // Handle objects
+        if (typeof obj === 'object') {
+            // Check if this object has a 'range' key with '@timestamp' inside
+            if (obj.range && typeof obj.range === 'object' && '@timestamp' in obj.range) {
+                // Return null to mark this object for removal
+                return null;
+            }
+
+            // Recursively process all properties
+            const result: any = {};
+            for (const [key, value] of Object.entries(obj)) {
+                const processedValue = this.removeTimestampRangeFilters(value);
+
+                // Only include the property if the processed value is not null/undefined
+                if (processedValue !== null && processedValue !== undefined) {
+                    result[key] = processedValue;
+                }
+            }
+
+            return result;
+        }
+
+        // Return primitive values as-is
+        return obj;
+    }
+
+    public async findMonitorEditQuery(monitorName: string): Promise<string>
     {
-        let response = await this.client.findMonitor(monitorId);
-        response.replace('{{period_end}}', periodEnd)
-            .replace('{{period_start}}', periodStart);
-        const data = JSON.parse(response);
-        console.log(response);
+        const monitor = await this.client.findMonitorByName(monitorName);
 
-        const indexId = data.monitor.inputs[0].search.indices[0];
+        return this.dashboardPublicHost + '/app/alerting#/monitors/' + monitor.id;
+    }
 
-        const indexPatternId = await this.client.getIndexPatternIdByIndexName(indexId);
+    public async findDashboardQuery(monitorName: string, periodStart: string, periodEnd: string): Promise<string>
+    {
+        const monitor = await this.client.findMonitorByName(monitorName);
 
-        const filters = data.monitor.inputs[0].search.query.query;
+        const indexPatternId = await this.client.getIndexPatternIdByIndexName(monitor.indexId);
+
+        // Remove timestamp range filters before creating the dashboard URL
+        const cleanedFilters = this.removeTimestampRangeFilters(monitor.query);
 
         const rison = RISON.stringify({
-            "filters": [{
+            "filters": [Object.assign({
                 "$state": {"store": "appState"},
-                "query": filters,
-                // "size": 0
-            }],
+            },cleanedFilters)],
             "index": indexPatternId,
             "interval": "auto",
             "query": {"language": "kuery", "query": ""}
         })
         return this.dashboardPublicHost + '/app/discover#?'
-        + `_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:${periodStart},to:${periodEnd}`
-        + `_a=${rison}`;
+        + `_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:${periodStart},to:${periodEnd}))`
+        + `&_a=${rison}`;
 
     }
 }

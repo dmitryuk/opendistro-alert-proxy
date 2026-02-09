@@ -1,35 +1,51 @@
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
+export type MonitorResponse = {
+    id: string,
+    indexId: string,
+    query: object,
+}
 export class OpendistroClient {
-    private readonly apiUrl: string;
     private readonly username: string;
     private readonly password: string;
     private readonly dashboardPrivateUrl: string;
 
     constructor(
-        apiUrl: string,
         dashboardPrivateUrl: string,
         username: string,
         password: string
     ) {
         this.dashboardPrivateUrl = dashboardPrivateUrl;
-        this.apiUrl = apiUrl;
         this.username = username;
         this.password = password;
     }
 
-    public async findMonitor(monitorId: string): Promise<string>
+
+    public async findMonitorByName(monitorName: string): Promise<MonitorResponse>
     {
+        const perpageMaximum = 2000;
         // @see https://docs.opensearch.org/latest/observing-your-data/alerting/api/
-            const res = await fetch(this.apiUrl + '/_plugins/_alerting/monitors/' + monitorId, {
-                headers: this.getAuthHeaders()
-            });
-            if (!res.ok) {
-                const errorBody = await res.text();
-                throw new Error(`HTTP error! Status: ${res.status}, Body: ${errorBody}`);
+
+        // don't put monitorName to search, since it not working with some chars (hyphen for example)
+        const res = await fetch(this.dashboardPrivateUrl + '/api/alerting/monitors?from=0&size=' + perpageMaximum + '&search=&sortField=name&sortDirection=desc&state=all', {
+            headers: this.getAuthHeaders(),
+        });
+        if (!res.ok) {
+            const errorBody = await res.text();
+            throw new Error(`HTTP error! Status: ${res.status}, Body: ${errorBody}`);
+        }
+        const json = await res.json();
+
+        for (const monitorData of json.monitors) {
+            if (monitorData?.name === monitorName) {
+                return {
+                    id: monitorData.id,
+                    indexId: monitorData.monitor.inputs[0].search.indices[0],
+                    query: monitorData.monitor.inputs[0].search.query,
+                };
             }
-            console.log(res)
-            return res.text();
+        }
+        throw new Error(`Monitor ${monitorName} not found.`);
     }
 
     public async getIndexPatternIdByIndexName(indexName: string): Promise<string>

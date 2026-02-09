@@ -8,15 +8,22 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/app.ts",
-    "dev": "node --watch --inspect=0.0.0.0:9229 src/app.ts"
+    "dev": "node --watch --inspect=0.0.0.0:9229 src/app.ts",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
     "@types/rison": "^0.1.0",
-    "nodemon": "^3.1.11"
+    "@typescript-eslint/eslint-plugin": "^8.54.0",
+    "@typescript-eslint/parser": "^8.54.0",
+    "eslint": "^9.39.2",
+    "nodemon": "^3.1.11",
+    "typescript": "^5.9.3"
   },
   "engines": {
-    "node": "^25.0"
+    "node": "^25.0",
+    "npm": "^11.8"
   },
   "dependencies": {
     "rison2": "^0.3.0"

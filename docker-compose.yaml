@@ -1,19 +1,16 @@
-x-opensearch-user: &opensearch-user admin
-x-opensearch-password: &opensearch-password yourStrongPassword123
-
 services:
     opensearch:
         image: opensearchproject/opensearch:2.12.0
         container_name: opensearch
+        env_file:
+            - .env
+            - .env.local
         environment:
             cluster.name: opensearch-cluster
             node.name: opensearch-node1
             discovery.type: single-node
             bootstrap.memory_lock: true
             OPENSEARCH_JAVA_OPTS: "-Xms512m -Xmx512m"
-            OPENSEARCH_INITIAL_ADMIN_PASSWORD: *opensearch-password
-            OPENSEARCH_USERNAME: *opensearch-user
-            OPENSEARCH_PASSWORD: *opensearch-password
         ulimits:
             memlock:
                 soft: -1
@@ -38,9 +35,10 @@ services:
             - "5601:5601"
         environment:
             OPENSEARCH_HOSTS: "https://opensearch:9200"
-            OPENSEARCH_USERNAME: *opensearch-user
-            OPENSEARCH_PASSWORD: *opensearch-password
             OPENSEARCH_SSL_VERIFICATION_MODE: none
+        env_file:
+            - .env
+            - .env.local
         networks:
             - opensearch-net
         depends_on:
@@ -57,17 +55,14 @@ services:
             - "9229:9229"
         networks:
             - opensearch-net
-        environment:
-            OPENSEARCH_HOST: https://opensearch:9200
-            OPENSEARCH_DASHBOARDS_PRIVATE_HOST: http://opensearch-dashboards:5601
-            OPENSEARCH_DASHBOARDS_PUBLIC_HOST: http://opensearch-dashboards:5601
-            OPENSEARCH_USERNAME: *opensearch-user
-            OPENSEARCH_PASSWORD: *opensearch-password
-        depends_on:
-            opensearch:
-                condition: service_healthy
-            opensearch-dashboards:
-                condition: service_started
+        env_file:
+            - .env
+            - .env.local
+#        depends_on:
+#            opensearch:
+#                condition: service_healthy
+#            opensearch-dashboards:
+#                condition: service_started
         volumes:
             - ./:/app
 volumes:
