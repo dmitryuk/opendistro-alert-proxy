@@ -76,6 +76,14 @@ OPENSEARCH_DASHBOARDS_PRIVATE_HOST=http://opensearch-dashboards:5601
 OPENSEARCH_DASHBOARDS_PUBLIC_HOST=http://opensearch-dashboards:5601
 ```
 
+## User required permissions:
+cluster:admin/opendistro/alerting/alerts/get
+cluster:admin/opendistro/alerting/destination/get
+cluster:admin/opendistro/alerting/monitor/get
+cluster:admin/opendistro/alerting/monitor/search
+cluster:admin/opensearch/alerting/findings/get
+indices:data/read/search
+
 ### Environment Variables
 
 | Variable | Description | Required |
