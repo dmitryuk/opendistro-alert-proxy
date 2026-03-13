@@ -21,12 +21,12 @@ export class OpendistroClient {
     }
 
 
-    public async findMonitorByName(monitorName: string): Promise<MonitorResponse>
+    public async findMonitorByTriggerId(triggerId: string): Promise<MonitorResponse>
     {
         const perpageMaximum = 2000;
         // @see https://docs.opensearch.org/latest/observing-your-data/alerting/api/
 
-        // don't put monitorName to search, since it not working with some chars (hyphen for example)
+        // don't put triggerId to search, since it not working with some chars (hyphen for example)
         const res = await fetch(this.dashboardPrivateUrl + '/api/alerting/monitors?from=0&size=' + perpageMaximum + '&search=&sortField=name&sortDirection=desc&state=all', {
             headers: this.getAuthHeaders(),
         });
@@ -37,15 +37,17 @@ export class OpendistroClient {
         const json = await res.json();
 
         for (const monitorData of json.monitors) {
-            if (monitorData?.name === monitorName) {
-                return {
-                    id: monitorData.id,
-                    indexId: monitorData.monitor.inputs[0].search.indices[0],
-                    query: monitorData.monitor.inputs[0].search.query,
-                };
+            for (const triggerData of monitorData.monitor.triggers) {
+                if (triggerData.query_level_trigger?.id === triggerId) {
+                    return {
+                        id: monitorData.id,
+                        indexId: monitorData.monitor.inputs[0].search.indices[0],
+                        query: monitorData.monitor.inputs[0].search.query,
+                    };
+                }
             }
         }
-        throw new Error(`Monitor ${monitorName} not found.`);
+        throw new Error(`Monitor ${triggerId} not found.`);
     }
 
     public async getIndexPatternIdByIndexName(indexName: string): Promise<string>

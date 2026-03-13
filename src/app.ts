@@ -29,14 +29,14 @@ const opendistroProcessor = new OpendistroProcessor(opendistroClient, dashboardP
 const server = http.createServer(async (req: http.IncomingMessage, res: http.ServerResponse) => {
 
     const requestUrl = new URL(req.url, `https://${req.headers.host}`);
-    const monitorName = requestUrl.searchParams.get('monitorName');
+    const triggerId = requestUrl.searchParams.get('triggerId');
     const periodStart = requestUrl.searchParams.get('periodStart');
     const periodEnd = requestUrl.searchParams.get('periodEnd');
     const isEditMode = requestUrl.searchParams.has('edit');
 
     // Step 3: Replace repetitive error handling with calls to sendErrorResponse
-    if (!monitorName) {
-        sendErrorResponse(res, 'monitorName query parameter is required.');
+    if (!triggerId) {
+        sendErrorResponse(res, 'triggerId query parameter is required.');
         return;
     }
 
@@ -50,13 +50,13 @@ const server = http.createServer(async (req: http.IncomingMessage, res: http.Ser
         return;
     }
 
-    // console.log(`Received request for monitorName: ${monitorName}, periodStart: ${periodStart}, periodEnd: ${periodEnd}`);
+    // console.log(`Received request for triggerId: ${triggerId}, periodStart: ${periodStart}, periodEnd: ${periodEnd}`);
     try {
         let responseUrl: string;
         if (isEditMode === false) {
-            responseUrl = await opendistroProcessor.findDashboardQuery(monitorName, periodStart, periodEnd);
+            responseUrl = await opendistroProcessor.findDashboardQuery(triggerId, periodStart, periodEnd);
         } else {
-            responseUrl = await  opendistroProcessor.findMonitorEditQuery(monitorName);
+            responseUrl = await  opendistroProcessor.findMonitorEditQuery(triggerId);
         }
         res.statusCode = 302;
         res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');

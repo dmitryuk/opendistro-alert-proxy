@@ -103,13 +103,13 @@ Generates a link to OpenSearch Discover with the monitor's query applied for a s
 **Endpoint:** `GET /`
 
 **Query Parameters:**
-- `monitorName` (required): Name of the monitor to retrieve query from
+- `triggerId` (required): Id of the trigger
 - `periodStart` (required): Start time for the query (e.g., `now-1h`, ISO timestamp)
 - `periodEnd` (required): End time for the query (e.g., `now`, ISO timestamp)
 
 **Example:**
-```bash
-curl "http://localhost:3000/?monitorName=my-monitor&periodStart=now-1h&periodEnd=now"
+```
+"http://localhost:3000/?triggerId={{ctx.trigger.id}}periodStart={{ctx.periodStart}}&periodEnd={{ctx.periodEnd}}"
 ```
 
 **Response:** HTTP 302 redirect to OpenSearch Dashboards Discover page
@@ -121,14 +121,14 @@ Generates a link to the monitor configuration page.
 **Endpoint:** `GET /?edit`
 
 **Query Parameters:**
-- `monitorName` (required): Name of the monitor to edit
+- `triggerId` (required): Name of the monitor to edit
 - `edit` (required): Flag to indicate edit mode (no value needed)
 - `periodStart` (required): Any value (required but ignored)
 - `periodEnd` (required): Any value (required but ignored)
 
 **Example:**
 ```bash
-curl "http://localhost:3000/?monitorName=my-monitor&edit&periodStart=now&periodEnd=now"
+curl "http://localhost:3000/?triggerId=my-monitor&edit&periodStart=now&periodEnd=now"
 ```
 
 **Response:** HTTP 302 redirect to OpenSearch Alerting monitor edit page

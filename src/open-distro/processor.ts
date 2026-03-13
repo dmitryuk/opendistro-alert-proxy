@@ -54,16 +54,16 @@ export class OpendistroProcessor
         return obj;
     }
 
-    public async findMonitorEditQuery(monitorName: string): Promise<string>
+    public async findMonitorEditQuery(triggerId: string): Promise<string>
     {
-        const monitor = await this.client.findMonitorByName(monitorName);
+        const monitor = await this.client.findMonitorByTriggerId(triggerId);
 
         return this.dashboardPublicHost + '/app/alerting#/monitors/' + monitor.id;
     }
 
-    public async findDashboardQuery(monitorName: string, periodStart: string, periodEnd: string): Promise<string>
+    public async findDashboardQuery(triggerId: string, periodStart: string, periodEnd: string): Promise<string>
     {
-        const monitor = await this.client.findMonitorByName(monitorName);
+        const monitor = await this.client.findMonitorByTriggerId(triggerId);
 
         const indexPatternId = await this.client.getIndexPatternIdByIndexName(monitor.indexId);
 
