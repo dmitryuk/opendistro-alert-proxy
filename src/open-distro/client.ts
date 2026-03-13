@@ -1,5 +1,7 @@
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
+import pMemoize from 'p-memoize';
+
 export type MonitorResponse = {
     id: string,
     indexId: string,
@@ -10,6 +12,12 @@ export class OpendistroClient {
     private readonly password: string;
     private readonly dashboardPrivateUrl: string;
 
+    // Cache TTL: 1 day in milliseconds (Step 1)
+    private static readonly INDEX_PATTERN_CACHE_TTL = 24 * 60 * 60 * 1000;
+
+    // Memoized function for index pattern lookup (created per-instance, Step 3)
+    private readonly getIndexPatternMemoized: (indexName: string) => Promise<string>;
+
     constructor(
         dashboardPrivateUrl: string,
         username: string,
@@ -18,6 +26,12 @@ export class OpendistroClient {
         this.dashboardPrivateUrl = dashboardPrivateUrl;
         this.username = username;
         this.password = password;
+
+        // Create memoized version of the helper (Step 3)
+        this.getIndexPatternMemoized = pMemoize(
+            this._getIndexPatternIdByIndexName.bind(this),
+            { maxAge: OpendistroClient.INDEX_PATTERN_CACHE_TTL }
+        );
     }
 
 
@@ -51,6 +65,11 @@ export class OpendistroClient {
     }
 
     public async getIndexPatternIdByIndexName(indexName: string): Promise<string>
+    {
+        return this.getIndexPatternMemoized(indexName);
+    }
+
+    private async _getIndexPatternIdByIndexName(indexName: string): Promise<string>
     {
         const base = indexName.split('-');
         if (base[base.length - 1] === '*') {

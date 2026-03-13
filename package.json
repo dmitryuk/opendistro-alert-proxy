@@ -26,6 +26,7 @@
     "npm": "^11.8"
   },
   "dependencies": {
+    "p-memoize": "^8.0.0",
     "rison2": "^0.3.0"
   }
 }
