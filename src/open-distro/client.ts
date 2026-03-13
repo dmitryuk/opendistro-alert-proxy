@@ -52,20 +52,36 @@ export class OpendistroClient {
 
     public async getIndexPatternIdByIndexName(indexName: string): Promise<string>
     {
-        const url = this.dashboardPrivateUrl + '/api/saved_objects/_find?fields=title&per_page=10000&type=index-pattern&search='  + indexName;
-        const res = await fetch(url, {
-            headers: this.getAuthHeaders()
-        });
-        if (!res.ok) {
-            const errorBody = await res.text();
-            throw new Error(`HTTP error! Status: ${res.status}, Body: ${errorBody}`);
+        const base = indexName.split('-');
+        if (base[base.length - 1] === '*') {
+            base.pop()
         }
-        const json = await res.json();
-        if (json?.total  === 0) {
-            throw new Error(`Index pattern for ${indexName} not found.`);
-        }
+        while (true) {
+            const indexNameIteration = base.join('-') + '-*';
 
-        return json.saved_objects[0].id;
+            const url = this.dashboardPrivateUrl + '/api/saved_objects/_find?fields=title&per_page=10000&type=index-pattern&search=' + indexNameIteration;
+            const res = await fetch(url, {
+                headers: this.getAuthHeaders()
+            });
+            if (!res.ok) {
+                const errorBody = await res.text();
+                throw new Error(`HTTP error! Status: ${res.status}, Body: ${errorBody}`);
+            }
+            const json = await res.json();
+            if (json?.total !== 0) {
+                for (const indexPattern of json.saved_objects) {
+                    if (indexPattern.attributes.title === indexNameIteration) {
+                        return indexPattern.id;
+                    }
+                }
+            }
+
+            base.pop();
+            if (base.length === 0) {
+                break;
+            }
+        }
+        throw new Error(`Index pattern for ${indexName} not found.`);
     }
 
     private getAuthHeaders(): HeadersInit
