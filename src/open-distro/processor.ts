@@ -79,7 +79,7 @@ export class OpendistroProcessor
             "query": {"language": "kuery", "query": ""}
         })
         return this.dashboardPublicHost + '/app/discover#?'
-        + `_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:${periodStart},to:${periodEnd}))`
+        + `_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:'${periodStart}',to:'${periodEnd}'))`
         + `&_a=${rison}`;
 
     }
