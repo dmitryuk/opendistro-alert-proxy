@@ -58,12 +58,12 @@ const server = http.createServer(async (req: http.IncomingMessage, res: http.Ser
         } else {
             responseUrl = await  opendistroProcessor.findMonitorEditQuery(triggerId);
         }
-        res.statusCode = 302;
+        res.statusCode = 200;
         res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
         res.setHeader('Pragma', 'no-cache');
         res.setHeader('Expires', '0');
-        res.setHeader('Location', responseUrl);
-        res.end();
+        res.setHeader('Content-Type', 'text/html');
+        res.end(`<!DOCTYPE html><html lang="en"><head><meta http-equiv="refresh" content="0; url=${responseUrl}"></head><body><script>window.location.replace("${responseUrl}");</script></body></html>`);
     } catch (error) {
         res.statusCode = 500;
         res.setHeader('Content-Type', 'text/plain');
