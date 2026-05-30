@@ -133,6 +133,21 @@ curl "http://localhost:3000/?triggerId=my-monitor&edit&periodStart=now&periodEnd
 
 **Response:** HTTP 302 redirect to OpenSearch Alerting monitor edit page
 
+### Select specific columns to see in Dashboard
+Add `fields` to your query, for example:
+```json lines
+{
+   "query": {
+      //...
+   },
+   "fields": [
+      {
+         "field": "log_processed.message"
+      }
+   ]
+}
+```
+
 ## Architecture
 
 ### Components
