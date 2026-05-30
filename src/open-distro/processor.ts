@@ -80,7 +80,7 @@ export class OpendistroProcessor
         })
         return this.dashboardPublicHost + '/app/discover#?'
         + `_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:'${periodStart}',to:'${periodEnd}'))`
-        + `&_a=${rison}`;
+        + `&_a=${encodeURIComponent(rison)}`;
 
     }
 }
