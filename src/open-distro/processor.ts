@@ -68,12 +68,13 @@ export class OpendistroProcessor
         const indexPatternId = await this.client.getIndexPatternIdByIndexName(monitor.indexId);
 
         // Remove timestamp range filters before creating the dashboard URL
-        const cleanedFilters = this.removeTimestampRangeFilters(monitor.query);
-
+        const cleanedFilters = this.removeTimestampRangeFilters(monitor.query) as Record<string, unknown>;
+        const fields = this.extractFields(cleanedFilters);
         const rison = RISON.stringify({
             "filters": [Object.assign({
                 "$state": {"store": "appState"},
             },cleanedFilters)],
+            "columns": fields,
             "index": indexPatternId,
             "interval": "auto",
             "query": {"language": "kuery", "query": ""}
@@ -82,5 +83,25 @@ export class OpendistroProcessor
         + `_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:'${periodStart}',to:'${periodEnd}'))`
         + `&_a=${encodeURIComponent(rison)}`;
 
+    }
+
+    private extractFields(query: Record<string, unknown>): Array<string> {
+        const result: Array<string> = [];
+        if (Object.hasOwn(query, 'fields') && Array.isArray(query.fields)) {
+            for (const data of query.fields) {
+                if (data && typeof data === 'object' && 'field' in data) {
+                    const field = (data as Record<string, unknown>).field;
+                    if (typeof field === 'string') {
+                        result.push(field);
+                    }
+                }
+            }
+            delete query.fields;
+        }
+        if (result.length === 0) {
+            result.push('_source')
+        }
+
+        return result;
     }
 }
