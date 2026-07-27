@@ -12,7 +12,7 @@ export class OpendistroProcessor
     }
 
     /**
-     * Recursively removes any 'range' entries that contain the '@timestamp' key from the filters object.
+     * Recursively removes any 'range' entries that contain the timestamp keys from the filters object.
      * Works with nested objects and arrays at any depth.
      */
     private removeTimestampRangeFilters(obj: any): any {
@@ -30,8 +30,7 @@ export class OpendistroProcessor
 
         // Handle objects
         if (typeof obj === 'object') {
-            // Check if this object has a 'range' key with '@timestamp' inside
-            if (obj.range && typeof obj.range === 'object' && '@timestamp' in obj.range) {
+            if (obj.range && typeof obj.range === 'object' && ('@timestamp' in obj.range || 'timestamp' in obj.range)) {
                 // Return null to mark this object for removal
                 return null;
             }
