@@ -1,0 +1,27 @@
+# Dependency directories
+npm-debug.log
+
+# Testing & Linting
+src/__tests__/
+jest.config.js
+eslint.config.js
+
+# Build and configuration files
+Dockerfile
+docker-compose.yaml
+.dockerignore
+
+# IDE / Editor files
+.idea/
+.vscode/
+
+# Git
+.git/
+.gitignore
+.github/
+
+# Local configuration & environment
+.env
+
+# Documentation
+README.md

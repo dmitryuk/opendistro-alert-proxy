@@ -16,6 +16,7 @@ The service automatically retrieves monitor configurations from OpenSearch, proc
 - **Time Range Support**: Automatically applies specified time periods to dashboard queries
 - **Monitor Edit Links**: Quick access to monitor configuration pages
 - **Filter Processing**: Removes timestamp range filters from monitor queries to allow custom time ranges
+- **Webhook Alert Forwarder**: Parse, validate, format, and forward OpenSearch alert webhooks to notification destinations with dynamic action links
 - **Docker Support**: Fully containerized setup with Docker Compose
 - **Health Checks**: Includes health check configuration for OpenSearch services
 
@@ -144,30 +145,49 @@ Add `fields` to your query, for example:
       {
          "field": "log_processed.message"
       },
-      // or simplier
+      // or simpler
       "log_processed.message"
    ]
 }
 ```
 
+### Forward Webhook Alerts (`POST /proxy-hook`)
+
+Parses OpenSearch alert payloads, extracts specific hit fields (replacing newlines with `.` for blockquote rendering), builds a structured markdown-like message, and forwards it to the endpoint specified in the `Proxy-Hook-To` header.
+
+**Endpoint:** `POST /proxy-hook`
+** Set message:** `{{#toJson}}ctx{{/toJson}}`
+
+**Headers:**
+- `Proxy-Hook-To` (required): The destination URL where the formatted message will be posted.
+
+**Behavior:**
+1. Validates that the `Proxy-Hook-To` header is present and is a valid URL string.
+2. Skips any hit where the `fields` object is missing, empty, or has no valid populated array values.
+3. Formats fields into a Markdown blockquote, adding exactly one newline of spacing after individual hits.
+4. Dynamically generates standard action links (Logs and Edit URLs) using the proxy's active `protocol://host` and template placeholders.
+5. Sends a `POST` request to the target destination URL with `Content-Type: text/html` containing the compiled message as the body, and returns `200 OK` upon success.
+
 ## Architecture
 
 ### Components
 
-- **`src/app.ts`** - Main HTTP server that handles incoming requests and routing
+- **`src/app.ts`** - Main HTTP server bootstrapper and path router
+- **`src/controllers/redirect.controller.ts`** - Handles `GET /` requests, validating query parameters and rendering dynamic redirect HTML pages
+- **`src/controllers/hook.controller.ts`** - Handles `POST /proxy-hook` requests, parsing payloads, validating fields, and forwarding formatted webhook notifications
 - **`src/open-distro/client.ts`** - OpenSearch API client for fetching monitor and index pattern data
 - **`src/open-distro/processor.ts`** - Processes monitor queries and generates dashboard URLs with RISON encoding
 
 ### Flow
 
-1. Client sends HTTP request with monitor name and time parameters
-2. Server validates required parameters
-3. `OpendistroClient` fetches monitor configuration from OpenSearch API
+1. Client sends HTTP request with monitor name and time parameters (or posts an alert payload to `/proxy-hook`)
+2. Server validates required parameters or headers/fields
+3. `OpendistroClient` fetches monitor configuration from OpenSearch API (or `HookController` compiles markdown message)
 4. `OpendistroProcessor` processes the query:
    - Removes timestamp range filters
    - Retrieves index pattern ID
    - Encodes query parameters using RISON format
-5. Server responds with 302 redirect to generated dashboard URL
+5. Server responds with 302 redirect to generated dashboard URL (or forwards compiled message to target webhook)
 
 ## Development
 
@@ -175,6 +195,7 @@ Add `fields` to your query, for example:
 
 - `npm start` - Start the production server
 - `npm run dev` - Start development server with hot-reload and debugging
+- `npm test` - Run the Jest test suite using `ts-jest` compilation (supports standard ES Modules)
 - `npm run lint` - Run ESLint to check code quality
 - `npm run lint:fix` - Run ESLint and automatically fix issues
 
