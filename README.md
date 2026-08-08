@@ -22,7 +22,7 @@ The service automatically retrieves monitor configurations from OpenSearch, proc
 
 ## Prerequisites
 
-- Node.js v25.0 or higher
+- Node.js v26.0 or higher
 - npm v11.8 or higher
 - Docker and Docker Compose (for containerized setup)
 

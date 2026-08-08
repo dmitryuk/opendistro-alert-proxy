@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
-    "@types/node": "^24.10.1",
+    "@types/node": "^26.0.0",
     "@types/rison": "^0.1.0",
     "@typescript-eslint/eslint-plugin": "^8.54.0",
     "@typescript-eslint/parser": "^8.54.0",
@@ -27,8 +27,8 @@
     "typescript": "^5.9.3"
   },
   "engines": {
-    "node": "^25.0",
-    "npm": "^11.8"
+    "node": ">=26.0.0",
+    "npm": ">=11.8"
   },
   "dependencies": {
     "p-memoize": "^8.0.0",
