@@ -143,7 +143,9 @@ Add `fields` to your query, for example:
    "fields": [
       {
          "field": "log_processed.message"
-      }
+      },
+      // or simplier
+      "log_processed.message"
    ]
 }
 ```
