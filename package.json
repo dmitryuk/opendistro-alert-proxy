@@ -10,15 +10,20 @@
     "start": "node src/app.ts",
     "dev": "node --watch --inspect=0.0.0.0:9229 src/app.ts",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "test": "jest"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.12",
     "@types/node": "^24.10.1",
     "@types/rison": "^0.1.0",
     "@typescript-eslint/eslint-plugin": "^8.54.0",
     "@typescript-eslint/parser": "^8.54.0",
     "eslint": "^9.39.2",
+    "jest": "^29.7.0",
     "nodemon": "^3.1.11",
+    "ts-jest": "^29.4.12",
+    "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
   "engines": {

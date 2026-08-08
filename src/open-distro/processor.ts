@@ -88,7 +88,9 @@ export class OpendistroProcessor
         const result: Array<string> = [];
         if (Object.hasOwn(query, 'fields') && Array.isArray(query.fields)) {
             for (const data of query.fields) {
-                if (data && typeof data === 'object' && 'field' in data) {
+                if (typeof data === 'string') {
+                    result.push(data);
+                } else if (data && typeof data === 'object' && 'field' in data) {
                     const field = (data as Record<string, unknown>).field;
                     if (typeof field === 'string') {
                         result.push(field);
