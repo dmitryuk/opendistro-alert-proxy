@@ -116,8 +116,8 @@ describe('HookController', () => {
     expect(sentBody).toContain('#### Prices Alert');
     
     // Check fields list blockquote
-    expect(sentBody).toContain('> *error.message*: Database connection lost.Timeout of 5000ms exceeded.Please try again');
-    expect(sentBody).toContain('> *status*: critical');
+    expect(sentBody).toContain('> *error.message*: `Database connection lost.Timeout of 5000ms exceeded.Please try again`');
+    expect(sentBody).toContain('> *status*: `critical`');
 
     // Check links match single slash format
     expect(sentBody).toContain('[Logs](https://proxy.local/?triggerId={{ctx.trigger.id}}&periodStart={{ctx.periodStart}}&periodEnd={{ctx.periodEnd}})');
@@ -199,7 +199,7 @@ describe('HookController', () => {
     expect(responseData).toBe("OK\n");
 
     const sentBody = mockFetch.mock.calls[0][1]?.body as string;
-    expect(sentBody).toContain('> *status*: critical');
+    expect(sentBody).toContain('> *status*: `critical`');
   });
 
   it('should skip the hit if fields has no valid populated array values in a hit', async () => {
@@ -236,7 +236,7 @@ describe('HookController', () => {
     expect(responseData).toBe("OK\n");
 
     const sentBody = mockFetch.mock.calls[0][1]?.body as string;
-    expect(sentBody).toContain('> *status*: critical');
+    expect(sentBody).toContain('> *status*: `critical`');
     expect(sentBody).not.toContain('error.message');
   });
 
@@ -275,11 +275,11 @@ describe('HookController', () => {
     expect(sentBody).toContain('#### SiteBack. prices-backend - errors > 1');
 
     // Check some fields from the example JSON
-    expect(sentBody).toContain('> *timestamp*: 2026-08-08T09:01:08.313Z');
-    expect(sentBody).toContain('> *log_processed.message*: No inhouse payment methods');
+    expect(sentBody).toContain('> *timestamp*: `2026-08-08T09:01:08.313Z`');
+    expect(sentBody).toContain('> *log_processed.message*: `No inhouse payment methods`');
 
     // Check single newline formatting after hits
-    expect(sentBody).toContain('> *log_processed.message*: No inhouse payment methods\n');
+    expect(sentBody).toContain('> *log_processed.message*: `No inhouse payment methods`\n');
 
     // Check Logs and Edit link format
     expect(sentBody).toContain('[Logs](https://proxy.local/?triggerId=Yc6gYYkBiQQ6WAHtJfmE&periodStart=2026-08-08T04:02:51.562Z&periodEnd=2026-08-08T09:02:51.562Z)');

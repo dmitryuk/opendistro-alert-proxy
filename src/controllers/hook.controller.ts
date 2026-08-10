@@ -45,7 +45,7 @@ export class HookController {
                                 const rawVal = valueArray[0];
                                 const cleanVal = String(rawVal).replace(/\r?\n|\r/g, '.');
                                 const cleanKey = key.replace(/@/g, '');
-                                fieldsText += `> *${cleanKey}*: ${cleanVal}\n`;
+                                fieldsText += `> *${cleanKey}*: \`${cleanVal}\`\n`;
                                 hitHasFields = true;
                             }
                         }
