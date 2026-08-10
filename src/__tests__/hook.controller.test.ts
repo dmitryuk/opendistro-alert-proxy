@@ -72,7 +72,7 @@ describe('HookController', () => {
                     'Database connection lost\nTimeout of 5000ms exceeded\nPlease try again'
                   ],
                   'status': [
-                    'critical'
+                    'cri`ti`cal'
                   ]
                 }
               }

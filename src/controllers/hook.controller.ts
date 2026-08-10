@@ -43,7 +43,7 @@ export class HookController {
                         for (const [key, valueArray] of Object.entries(hit.fields)) {
                             if (Array.isArray(valueArray) && valueArray.length > 0) {
                                 const rawVal = valueArray[0];
-                                const cleanVal = String(rawVal).replace(/\r?\n|\r/g, '.');
+                                const cleanVal = String(rawVal).replace(/\r?\n|\r/g, '.').replace(/`/g, '');
                                 const cleanKey = key.replace(/@/g, '');
                                 fieldsText += `> *${cleanKey}*: \`${cleanVal}\`\n`;
                                 hitHasFields = true;
