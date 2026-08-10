@@ -1,0 +1,143 @@
+{
+  "monitor": {
+    "_id": "",
+    "_version": 1,
+    "name": "SiteBack. prices-backend - errors > 1",
+    "enabled": true
+  },
+  "results": [
+    {
+      "_shards": {
+        "total": 3,
+        "failed": 0,
+        "successful": 3,
+        "skipped": 2
+      },
+      "hits": {
+        "hits": [
+          {
+            "highlight": {
+              "log_processed.level.keyword": [
+                "@opensearch-dashboards-highlighted-field@warning@/opensearch-dashboards-highlighted-field@"
+              ]
+            },
+            "_index": "prices-backend-2026.08",
+            "_source": {
+              "xxx": 1
+            },
+            "_id": "DYma4J8BUHYt5Skny51V",
+            "sort": [
+              1786179668313
+            ],
+            "_score": null,
+            "fields": {
+              "@timestamp": [
+                "2026-08-08T09:01:08.313Z"
+              ],
+              "k8s_annotations.kubectl.kubernetes.io/restartedAt": [
+                "2026-07-07T03:17:58.000Z"
+              ],
+              "log_processed.message": [
+                "No inhouse payment methods"
+              ]
+            },
+            "_version": 1
+          },
+          {
+            "highlight": {
+              "log_processed.level.keyword": [
+                "@opensearch-dashboards-highlighted-field@warning@/opensearch-dashboards-highlighted-field@"
+              ]
+            },
+            "_index": "prices-backend-2026.08",
+            "_source": {
+              "xxx": 1
+            },
+            "_id": "3B-a4J8BO3SbvdiRt21j",
+            "sort": [
+              1786179662112
+            ],
+            "_score": null,
+            "fields": {
+              "@timestamp": [
+                "2026-08-08T09:01:02.112Z"
+              ],
+              "k8s_annotations.kubectl.kubernetes.io/restartedAt": [
+                "2026-07-07T03:17:58.000Z"
+              ],
+              "log_processed.message": [
+                "Unsuccessful order placeOrder by 2Pay.js."
+              ]
+            },
+            "_version": 1
+          },
+          {
+            "highlight": {
+              "log_processed.level.keyword": [
+                "@opensearch-dashboards-highlighted-field@warning@/opensearch-dashboards-highlighted-field@"
+              ]
+            },
+            "_index": "prices-backend-2026.08",
+            "_source": {
+              "xxx": 1
+            },
+            "_id": "yx-a4J8BO3SbvdiRYwWb",
+            "sort": [
+              1786179640758
+            ],
+            "_score": null,
+            "fields": {
+              "@timestamp": [
+                "2026-08-08T09:00:40.758Z"
+              ],
+              "k8s_annotations.kubectl.kubernetes.io/restartedAt": [
+                "2026-07-07T03:17:58.000Z"
+              ],
+              "log_processed.message": [
+                "No inhouse payment methods"
+              ]
+            },
+            "_version": 1
+          }
+        ],
+        "total": {
+          "value": 7,
+          "relation": "eq"
+        },
+        "max_score": null
+      },
+      "took": 8,
+      "timed_out": false,
+      "aggregations": {
+        "2": {
+          "buckets": [
+            {
+              "key_as_string": "2026-08-08T13:50:00.000+05:00",
+              "doc_count": 3,
+              "key": 1786179000000
+            },
+            {
+              "key_as_string": "2026-08-08T14:00:00.000+05:00",
+              "doc_count": 4,
+              "key": 1786179600000
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "periodStart": "2026-08-08T04:02:51.562Z",
+  "periodEnd": "2026-08-08T09:02:51.562Z",
+  "error": null,
+  "trigger": {
+    "id": "Yc6gYYkBiQQ6WAHtJfmE",
+    "name": "backend_alerts",
+    "severity": "1",
+    "actions": [
+      {
+        "name": "to rocket"
+      }
+    ]
+  },
+  "alert": null
+}
